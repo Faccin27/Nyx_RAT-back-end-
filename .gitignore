@@ -1,0 +1,137 @@
+# Sistema operacional
+####################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Linux
+*~
+
+# Dependências e pacotes
+########################
+# Node.js
+/node_modules
+/npm-debug.log
+/yarn-error.log
+.pnpm-debug.log
+/dist
+/build
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+*.pyo
+
+# Java
+*.class
+*.war
+*.ear
+
+# Ruby
+/vendor/bundle
+/log/*
+!/log/.keep
+/tmp
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Go
+/go/bin
+/go/pkg
+/go/src
+
+# IDEs e editores
+################
+# JetBrains (IntelliJ IDEA, PyCharm, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Eclipse
+/.settings/
+*.pydevproject
+.project
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# VIM
+*.swp
+*.swo
+
+# Ambiente de desenvolvimento
+############################
+# Logs e relatórios de erros
+*.log
+*.stackdump
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Arquivos de compilação
+########################
+# C
+*.out
+*.o
+*.so
+
+# JavaScript
+*.js.map
+
+# Build tools
+/.sass-cache
+/.cache-loader
+/.parcel-cache
+/coverage
+/.nyc_output
+
+# Outros
+#########
+# Arquivos de ambiente
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Imagens processadas
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Arquivos de backup
+*.bak
+*.orig
+
+# Arquivos de teste e deploy
+*.log
+*.lock
+/.htpasswd
+/.htaccess
+
+# Arquivos gerados por container
+.dockerignore
+docker-compose*.yaml
+Dockerfile
