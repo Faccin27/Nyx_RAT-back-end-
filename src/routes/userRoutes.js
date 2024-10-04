@@ -1,5 +1,5 @@
 const UserController = require('../controllers/userController');
-const authMiddleware = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authenticate');
 
 async function userRoutes(fastify, options) {
   fastify.get('/', { preHandler: [] }, UserController.getAllUsers);
