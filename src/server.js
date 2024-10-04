@@ -1,27 +1,21 @@
 require('dotenv').config();
 const Fastify = require('fastify');
 const fastify = Fastify();
-const axios = require('axios');
 const cors = require('@fastify/cors');
+const jwt = require('@fastify/jwt');
+const router = require('./router');
+const { corsOptions, jwtOptions } = require('./config/environment');
 
-// Configura CORS
-fastify.register(cors, {
-  origin: process.env.FRONTEND_URL, 
-  credentials: true
-});
+// Configurar CORS
+fastify.register(cors, corsOptions);
 
-// Esta rota deve verificar se o aplicativo esta rodando no computador da vitima.
-fastify.get('/api/check-app', async (request, reply) => {
-  try {
-    // Faz uma requisição para o servidor Python
-    const response = await axios.get(`${process.env.PYTHON_SERVER}/check-app`);
-    return response.data;
-  } catch (error) {
-    return reply.status(500).send({ error: 'Nyx não ativo.' });
-  }
-});
+// Registrar o plugin JWT
+fastify.register(jwt, jwtOptions);
 
-// Inicia o servidor
+// Registrar rotas
+fastify.register(router);
+
+// Iniciar o servidor
 const start = async () => {
   try {
     await fastify.listen({ port: process.env.PORT || 3000 });
@@ -31,4 +25,5 @@ const start = async () => {
     process.exit(1);
   }
 };
+
 start();
