@@ -89,7 +89,14 @@ class userController {
 
   async createUser(req, reply) {
     try {
-      const newUser = await UserDAO.createUser(req.body);
+      const { password, ...userData } = req.body; // Extrai a senha e outros dados do usuário
+  
+      // Criptografa a senha
+      const hashedPassword = await bcrypt.hash(password, 10); // O '10' é o número de rounds de salting
+  
+      // Cria um novo usuário com a senha criptografada
+      const newUser = await UserDAO.createUser({ ...userData, password: hashedPassword });
+  
       reply.status(201).send(newUser);
     } catch (err) {
       if (err.message === 'Email already exists') {
