@@ -26,29 +26,36 @@ class userController {
   }
 
   async login(req, reply) {
-    console.log(req.body)
+    console.log("Requisição recebida:", req.body);
     const { email, pass } = req.body;
-
+  
     try {
       // Verifica se o usuário existe
       const user = await UserDAO.getUserByEmail(email);
+      console.log("Usuário encontrado:", user); // Log do usuário encontrado
+  
       if (!user) {
         return reply.status(404).send({ message: 'User not found' });
       }
+  
       // Verifica se a senha está correta
       const isPasswordValid = await bcrypt.compare(pass, user.pass);
+      console.log("Senha válida:", isPasswordValid); // Log da verificação da senha
+  
       if (!isPasswordValid) {
         return reply.status(401).send({ message: 'Invalid credentials' });
       }
-
+  
       // Gera o token JWT
       const token = await reply.jwtSign({ id: user.id, email: user.email });
-
+  
       reply.send({ token });
     } catch (error) {
+      console.error("Erro durante o login:", error); // Log de erro
       reply.status(500).send({ message: 'Failed to login' });
     }
   }
+  
 
   async getLoggedUser(req, reply) {
     const usuarioLogado = await UserDAO.getUserById(req.user.id);

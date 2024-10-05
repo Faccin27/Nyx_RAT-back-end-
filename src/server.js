@@ -3,7 +3,7 @@ const Fastify = require('fastify');
 const fastify = Fastify();
 const cors = require('@fastify/cors');
 const jwt = require('@fastify/jwt');
-const router = require('./router');
+const router = require('./routes/router');
 const { corsOptions, jwtOptions } = require('./config/environment');
 
 // Configurar CORS

@@ -2,14 +2,14 @@ const UserController = require('../controllers/userController');
 const authMiddleware = require('../middlewares/authenticate');
 
 async function userRoutes(fastify, options) {
-  fastify.get('/', { preHandler: [] }, UserController.getAllUsers);
-  fastify.get('/:id', { preHandler: authMiddleware }, UserController.getUserById);
-  fastify.get('/me', { preHandler: authMiddleware }, UserController.getLoggedUser); 
-  fastify.post('/', { preHandler: authMiddleware }, UserController.createUser);
-  fastify.post('/register', { preHandler: [] }, UserController.register);
-  fastify.post('/login', { preHandler: [] }, UserController.login);
-  fastify.put('/:id', { preHandler: authMiddleware }, UserController.updateUser);
-  fastify.delete('/:id', { preHandler: authMiddleware }, UserController.deleteUser);
+  fastify.get('/',  UserController.getAllUsers);
+  fastify.get('/:id', UserController.getUserById);
+  fastify.get('/me', UserController.getLoggedUser); 
+  fastify.post('/',  UserController.createUser);
+  fastify.post('/register',  UserController.register);
+  fastify.post('/login',  UserController.login);
+  fastify.put('/:id', UserController.updateUser);
+  fastify.delete('/:id', UserController.deleteUser);
 }
 
 module.exports = userRoutes;

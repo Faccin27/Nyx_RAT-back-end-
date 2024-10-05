@@ -1,5 +1,5 @@
-const userRoutes = require('./routes/userRoutes');
-const appRoutes = require('./routes/appRoutes');
+const userRoutes = require('./userRoutes');
+const appRoutes = require('./appRoutes');
 
 async function router(fastify, options) {
   fastify.register(userRoutes, { prefix: '/users' });
