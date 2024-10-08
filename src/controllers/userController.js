@@ -1,5 +1,7 @@
 const UserDAO = require("../models/dao/userDAO");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken'); 
+
 
 class userController {
   async register(req, reply) {
@@ -32,15 +34,20 @@ class userController {
     try {
       // Verifica se o usuário existe
       const user = await UserDAO.getUserByEmail(email);
-      console.log("Usuário encontrado:", user); // Log do usuário encontrado
+      console.log("Usuário encontrado:", user);
   
       if (!user) {
         return reply.status(404).send({ message: 'User not found' });
       }
   
       // Verifica se a senha está correta
-      const isPasswordValid = await bcrypt.compare(pass, user.pass);
-      console.log("Senha válida:", isPasswordValid); // Log da verificação da senha
+      if (!user.password) {
+        console.error("Hash de senha não encontrado para o usuário");
+        return reply.status(500).send({ message: 'Internal server error' });
+      }
+
+      const isPasswordValid = await bcrypt.compare(pass, user.password);
+      console.log("Senha válida:", isPasswordValid);
   
       if (!isPasswordValid) {
         return reply.status(401).send({ message: 'Invalid credentials' });
@@ -51,15 +58,78 @@ class userController {
   
       reply.send({ token });
     } catch (error) {
-      console.error("Erro durante o login:", error); // Log de erro
+      console.error("Erro durante o login:", error);
       reply.status(500).send({ message: 'Failed to login' });
     }
   }
   
-
   async getLoggedUser(req, reply) {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return reply.status(401).send({ message: 'No token provided' });
+      }
+
+      const token = authHeader.split(' ')[1]; 
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+
+      const user = await UserDAO.getUserById(decoded.id);
+
+      if (!user) {
+        return reply.status(404).send({ message: 'User not found' });
+      }
+
+      const { password, ...userWithoutPassword } = user;
+
+      reply.send(userWithoutPassword);
+    } catch (error) {
+      console.error("Erro ao obter usuário logado:", error);
+      if (error.name === 'JsonWebTokenError') {
+        reply.status(401).send({ message: 'Invalid token' });
+      } else {
+        reply.status(500).send({ message: 'Internal server error' });
+      }
+    }
+  }
+
+  async getLoggedUserById(req, reply) {
     const usuarioLogado = await UserDAO.getUserById(req.user.id);
     reply.send(usuarioLogado);
+  }
+
+  async getLoggedUser(req, reply) {
+    try {
+      // Extrair o token do cabeçalho da requisição
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return reply.status(401).send({ message: 'No token provided' });
+      }
+
+      const token = authHeader.split(' ')[1]; // Assumindo que o token está no formato "Bearer <token>"
+
+      // Verificar e decodificar o token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Certifique-se de que JWT_SECRET está definido em suas variáveis de ambiente
+
+      // Buscar o usuário no banco de dados usando o ID decodificado do token
+      const user = await UserDAO.getUserById(decoded.id);
+
+      if (!user) {
+        return reply.status(404).send({ message: 'User not found' });
+      }
+
+      // Remover informações sensíveis antes de enviar a resposta
+      const { password, ...userWithoutPassword } = user;
+
+      reply.send(userWithoutPassword);
+    } catch (error) {
+      console.error("Erro ao obter usuário logado:", error);
+      if (error.name === 'JsonWebTokenError') {
+        reply.status(401).send({ message: 'Invalid token' });
+      } else {
+        reply.status(500).send({ message: 'Internal server error' });
+      }
+    }
   }
 
   async getAllUsers(req, reply) {
@@ -89,12 +159,10 @@ class userController {
 
   async createUser(req, reply) {
     try {
-      const { password, ...userData } = req.body; // Extrai a senha e outros dados do usuário
+      const { password, ...userData } = req.body;
   
-      // Criptografa a senha
-      const hashedPassword = await bcrypt.hash(password, 10); // O '10' é o número de rounds de salting
+      const hashedPassword = await bcrypt.hash(password, 10);
   
-      // Cria um novo usuário com a senha criptografada
       const newUser = await UserDAO.createUser({ ...userData, password: hashedPassword });
   
       reply.status(201).send(newUser);
