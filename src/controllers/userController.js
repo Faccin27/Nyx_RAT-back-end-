@@ -64,73 +64,46 @@ class userController {
   }
   
   async getLoggedUser(req, reply) {
+    console.log("get looged user")
     try {
       const authHeader = req.headers.authorization;
-      if (!authHeader) {
+      console.log(authHeader)
+      const token = authHeader.split(' ')[1];
+
+      if (!token) {
         return reply.status(401).send({ message: 'No token provided' });
       }
 
-      const token = authHeader.split(' ')[1]; 
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  
       const user = await UserDAO.getUserById(decoded.id);
-
+  
       if (!user) {
         return reply.status(404).send({ message: 'User not found' });
       }
-
+  
       const { password, ...userWithoutPassword } = user;
-
+  
+      console.log(userWithoutPassword)
       reply.send(userWithoutPassword);
     } catch (error) {
       console.error("Erro ao obter usuário logado:", error);
+  
       if (error.name === 'JsonWebTokenError') {
-        reply.status(401).send({ message: 'Invalid token' });
+        return reply.status(401).send({ message: 'Invalid token' });
       } else {
-        reply.status(500).send({ message: 'Internal server error' });
+        return reply.status(500).send({ message: 'Internal server error' });
       }
     }
   }
+  
 
   async getLoggedUserById(req, reply) {
     const usuarioLogado = await UserDAO.getUserById(req.user.id);
     reply.send(usuarioLogado);
   }
 
-  async getLoggedUser(req, reply) {
-    try {
-      // Extrair o token do cabeçalho da requisição
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        return reply.status(401).send({ message: 'No token provided' });
-      }
 
-      const token = authHeader.split(' ')[1]; // Assumindo que o token está no formato "Bearer <token>"
-
-      // Verificar e decodificar o token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Certifique-se de que JWT_SECRET está definido em suas variáveis de ambiente
-
-      // Buscar o usuário no banco de dados usando o ID decodificado do token
-      const user = await UserDAO.getUserById(decoded.id);
-
-      if (!user) {
-        return reply.status(404).send({ message: 'User not found' });
-      }
-
-      // Remover informações sensíveis antes de enviar a resposta
-      const { password, ...userWithoutPassword } = user;
-
-      reply.send(userWithoutPassword);
-    } catch (error) {
-      console.error("Erro ao obter usuário logado:", error);
-      if (error.name === 'JsonWebTokenError') {
-        reply.status(401).send({ message: 'Invalid token' });
-      } else {
-        reply.status(500).send({ message: 'Internal server error' });
-      }
-    }
-  }
 
   async getAllUsers(req, reply) {
     try {

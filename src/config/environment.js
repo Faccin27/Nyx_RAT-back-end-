@@ -1,8 +1,8 @@
 require('dotenv').config();
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,  // Permitir o front-end acessar o back-end
-  credentials: true,  // Permitir cookies
+  origin: process.env.FRONTEND_URL, 
+  credentials: true,  
 };
 
 const jwtOptions = {
